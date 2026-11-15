@@ -4,7 +4,7 @@ Nov 14, 2026
 
 ## What it does
 
-AnimForge Studio fixes animations you import into Roblox Studio from Mixamo, Blender, motion capture, or AI video capture. One click (Fix All) levels slanted feet, removes the baked-in hip offset, turns a backwards-facing clip around, takes out joint pops and leg tremble, puts the feet on the ground, and cuts a walk down to one clean loop. It then tells you the WalkSpeed at which the feet stop sliding.
+AnimForge Studio fixes animation clips in Roblox Studio, whether they came from Mixamo, the Animation Editor, or AI video capture. One click (Fix All) levels slanted feet, removes the baked-in hip offset, turns a backwards-facing clip around, takes out joint pops and leg tremble, puts the feet on the ground, and cuts a walk down to one clean loop. It then tells you the WalkSpeed at which the feet stop sliding.
 
 It also converts animations downloaded from Mixamo into clips that play on a Roblox R15 rig, straight from the FBX file, with no retargeting in Blender first.
 
@@ -27,7 +27,7 @@ Every tool in this manual is in the plugin; there is one version.
 ## Install and first run
 
 1. Install from the Creator Store (Plugins tab → Manage Plugins, or the Store page). Restart Studio: plugins load at startup.
-2. Click **AnimForge** in the Plugins tab. The dock opens on the right. Drag it wider than 320 px for the full layout; narrower, it stacks.
+2. Click **AnimForge** in the Plugins tab. The dock opens on the right. Drag it wider than 340 px for the full layout; narrower, it stacks.
 3. Open the Clip Editor on your rig, import your clip (⋯ → Import → From File for FBX), and **Save** it. Studio stores it as a `KeyframeSequence` under `ServerStorage → RBX_ANIMSAVES → <rig name>`. That is the object the plugin works on.
 
 Two things you select in the Explorer:
@@ -109,7 +109,7 @@ Use the Import button when you have the FBX file. It reads the character's true 
 - Scales how far the hips travel to your rig's leg length, so steps match the rig's size.
 - Turns the clip to face forwards on a Roblox rig.
 - Raises the hips where the head, torso or thighs would otherwise go under the floor.
-- Turns Loop on when the clip ends on the pose it started on.
+- Turns Loop on for movement clips (walks, runs, idles and the like) that end on the pose they started on. The log says when it does.
 
 The log prints one line per file with the keyframe count, the hip scale, and whether the hips were raised. A refused file gets a line starting `Import Mixamo FBX: skipped` with the reason.
 
@@ -218,9 +218,9 @@ The log prints how many poses were changed, e.g. `reset 204 poses` for 34 keyfra
 
 **Keyframe reduction** drops keyframes closer together than 1/fps (30 by default). A 60 fps import becomes half the size with no visible change. First and last keyframes are always kept. The log reads `removed X of N keyframes`.
 
-**Mirror** flips the clip left↔right: a right-hand punch becomes a left-hand punch. It reflects every pose across the body's centre plane and swaps Left\*/Right\* names, including keyframe markers like `LeftFootstep`. Always writes `<clip>_mirrored`. Works on R15 and R6; custom rigs need symmetric joints.
+**Mirror** flips the clip left↔right: a right-hand punch becomes a left-hand punch. It reflects every pose across the body's centre plane and swaps Left\*/Right\* names, including keyframe markers like `LeftFootstep`. Writes `<clip>_mirrored`, or changes the clip itself when Work on a copy is off. Works on R15 and R6; custom rigs need symmetric joints.
 
-**Pack validator** checks a Folder of clips against the Avatar Animation Pack slots before you upload: Idle (up to 2), Walk, Run, Jump, Fall, Climb, Swim, SwimIdle. It reports missing slots, wrong Loop flags (Jump must not loop; everything else must), lengths outside the usual range, non-Core priority, and clips with no `HumanoidRootPart` pose. Select the Folder, click, read the log. Studio's own upload check is still the final word.
+**Pack validator** checks a set of clips against the Avatar Animation Pack slots before you upload: Idle (up to 2), Walk, Run, Jump, Fall, Climb, Swim, SwimIdle. It reports missing slots, wrong Loop flags (Jump must not loop; everything else must), lengths outside the usual range, non-Core priority, and clips with no `HumanoidRootPart` pose. Select the rig's entry under RBX\_ANIMSAVES, a Folder, or the clips themselves, then click and read the log. Studio's own upload check is still the final word.
 
 **Debug rig** prints what the plugin sees in the rig: root part, joint count and type (Motor6D / AnimationConstraint), the solve order, which parts it treats as feet, and the ground line. Run it once per rig if Feet on ground misbehaves.
 
@@ -255,7 +255,7 @@ Fights, jumps, waves and idles get no walk speed lines.
 6. For a walk or run, read the walk speed line and set the WalkSpeed or Speed it suggests.
 7. Publish to Roblox from the Animation Editor.
 
-**Blender or already-retargeted import (the common case)**
+**Other imported clips (the common case)**
 
 A file straight from Mixamo uses Mixamo's own bone names (`mixamorig:Hips` and so on) and won't move a Roblox rig until it is converted. Use the Mixamo workflow above for those. **List parts** shows the names a clip uses.
 
@@ -327,9 +327,9 @@ Saves aren't where you expect: since late 2023 the Clip Editor stores saves in `
 - R15 rigs, including the 2026 Rig Builder rigs that use `AnimationConstraint` joints
 - R6 rigs
 - Custom block rigs built from `Motor6D` or `AnimationConstraint` joints (Feet on ground needs parts it can recognise as feet: `LeftFoot`/`RightFoot`, anything named *foot*, or it falls back to the two lowest parts)
-- Clips saved by the Clip Editor or imported from Roblox, FBX, or the Blender exporter
+- Clips saved by the Clip Editor or imported from Roblox or FBX. Tested with Mixamo downloads, AI video capture clips and clips made in the Animation Editor
 - Mixamo FBX downloads (binary FBX, Keyframe Reduction: none), converted to R15 clips
-- Studio light and dark themes; dock widths down to about 160 px
+- Studio light and dark themes
 
 **Not supported in this version**
 
